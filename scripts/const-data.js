@@ -1,0 +1,1 @@
+export const INFURA_API_KEY="d791bae253594e72ab45d587f840c9b4"
