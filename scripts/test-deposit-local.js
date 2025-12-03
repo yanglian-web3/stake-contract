@@ -1,13 +1,12 @@
-const { ethers } = require("hardhat");
+const { ethers, upgrades } = require("hardhat");
 
 async function main() {
-    console.log("🚀 开始本地测试...");
+    console.log("🚀 开始本地测试（可升级合约）...");
 
-    // 获取本地网络账户
-    const [deployer, user1] = await ethers.getSigners();
+    const [deployer] = await ethers.getSigners();
     console.log("测试账户:", deployer.address);
 
-    // 1. 部署 MetaNode 代币（如果需要）
+    // 1. 部署测试代币
     console.log("\n1. 部署测试代币...");
     const MetaNodeToken = await ethers.getContractFactory("ERC20Mock");
     const metaNodeToken = await MetaNodeToken.deploy(
@@ -17,25 +16,32 @@ async function main() {
         ethers.parseEther("1000000")
     );
     await metaNodeToken.waitForDeployment();
-    console.log("MetaNode 代币地址:", await metaNodeToken.getAddress());
+    const tokenAddress = await metaNodeToken.getAddress();
+    console.log("MetaNode 代币地址:", tokenAddress);
 
-    // 2. 部署质押合约
-    console.log("\n2. 部署质押合约...");
+    // 2. 部署可升级的质押合约
+    console.log("\n2. 部署可升级质押合约...");
     const Stake = await ethers.getContractFactory("MetaNodeStake");
 
     const startBlock = (await ethers.provider.getBlockNumber()) + 10;
     const endBlock = startBlock + 100000;
     const metaNodePerBlock = ethers.parseEther("0.02");
 
-    const stakeContract = await Stake.deploy(
-        await metaNodeToken.getAddress(),
-        startBlock,
-        endBlock,
-        metaNodePerBlock
+    // 使用 upgrades.deployProxy 部署代理合约
+    const stakeContract = await upgrades.deployProxy(
+        Stake,
+        [
+            tokenAddress,
+            startBlock,
+            endBlock,
+            metaNodePerBlock
+        ],
+        { initializer: "initialize" }
     );
+
     await stakeContract.waitForDeployment();
     const stakeAddress = await stakeContract.getAddress();
-    console.log("质押合约地址:", stakeAddress);
+    console.log("质押合约地址（代理）:", stakeAddress);
 
     // 3. 初始化合约（添加 ETH 池）
     console.log("\n3. 初始化 ETH 池...");
@@ -87,11 +93,7 @@ async function main() {
 
     } catch (error) {
         console.log("❌ 存款失败:", error.message);
-
-        // 尝试解析 revert 原因
-        if (error.data) {
-            console.log("Revert 数据:", error.data);
-        }
+        console.log("完整错误:", error);
     }
 }
 
