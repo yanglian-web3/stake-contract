@@ -8,13 +8,20 @@ module.exports = {
     version: "0.8.22",
     settings: {
       optimizer: {
-        enabled: false,
+        enabled: true,
         runs: 200,
       },
     },
   },
   networks: {
-    hardhat: {},
+    hardhat: {
+      chainId: 31337,
+      nativeCurrency: {
+        name: "Hardhat Ether",
+        symbol: "HETH", // 改为 HETH 而不是 ETH
+        decimals: 18
+      },
+    },
     sepolia: {
       url:
         // "https://eth-sepolia.g.alchemy.com/v2/" + process.env.ALCHEMY_API_KEY,
