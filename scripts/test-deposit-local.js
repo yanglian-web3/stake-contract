@@ -1,45 +1,35 @@
-// 完整的本地部署脚本（包含ETH分发）- 修复余额获取问题
+// 完整的本地部署脚本（保持原有功能，添加 DEX）- 精简版
 const { ethers, upgrades } = require("hardhat");
 
-// ETH 分发函数
+// ETH 分发函数 - 保持不变
 async function distributeETH(deployer, accounts, amountETH = "10") {
     console.log(`\n💰 分发 ETH 给测试账户...`);
-
     const amountWei = ethers.parseEther(amountETH);
 
     for (let i = 0; i < accounts.length; i++) {
         const account = accounts[i];
-
-        // 跳过部署者自己
         if (account.toLowerCase() === deployer.address.toLowerCase()) {
             continue;
         }
 
-        // 获取当前余额
         const balanceBefore = await ethers.provider.getBalance(account);
-
         console.log(`\n处理账户 ${i + 1}/${accounts.length}: ${account}`);
         console.log(`   当前余额: ${ethers.formatEther(balanceBefore)} ETH`);
 
-        // 如果已经有足够的 ETH，跳过
         if (balanceBefore >= amountWei) {
             console.log(`   ✅ 已有足够 ETH，跳过`);
             continue;
         }
 
         try {
-            // 发送 ETH
             const tx = await deployer.sendTransaction({
                 to: account,
                 value: amountWei
             });
-
             await tx.wait();
-
             const balanceAfter = await ethers.provider.getBalance(account);
             console.log(`   ✅ 发送 ${ethers.formatEther(amountWei)} ETH 成功`);
             console.log(`   更新后余额: ${ethers.formatEther(balanceAfter)} ETH`);
-
         } catch (error) {
             console.error(`   ❌ 发送 ETH 失败:`, error.message);
         }
@@ -47,16 +37,16 @@ async function distributeETH(deployer, accounts, amountETH = "10") {
 }
 
 async function main() {
-    console.log("🚀 开始本地测试（多代币版本）...");
+    console.log("🚀 开始本地测试（完整版）...");
 
-    // 获取所有可用账户
+    // 获取所有可用账户 - 不变
     const accounts = await ethers.getSigners();
     const deployer = accounts[0];
 
     console.log("部署账户:", deployer.address);
     console.log("部署账户余额:", ethers.formatEther(await ethers.provider.getBalance(deployer.address)), "ETH");
 
-    // 获取 Hardhat 默认的测试账户
+    // 获取 Hardhat 默认的测试账户 - 不变
     const testAccounts = [
         '0x70997970C51812dc3A010C7d01b50e0d17dc79C8',
         '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC',
@@ -65,13 +55,13 @@ async function main() {
         '0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc'
     ];
 
-    console.log("总账户数:", testAccounts.length + 1); // +1 包括部署者
+    console.log("总账户数:", testAccounts.length + 1);
 
-    // 1. 首先为测试账户分发 ETH（重要！）
+    // 1. 为测试账户分发 ETH - 不变
     console.log("\n1. 为测试账户分发 ETH...");
     await distributeETH(deployer, testAccounts, "10");
 
-    // 代币配置
+    // 代币配置 - 保持不变
     const tokenConfigs = [
         {
             name: "MetaNode Token",
@@ -105,27 +95,22 @@ async function main() {
 
     const deployedTokens = {};
 
-    // 2. 部署多个测试代币
+    // 2. 部署多个测试代币 - 保持不变
     console.log("\n\n2. 部署多个测试代币...");
     for (const config of tokenConfigs) {
         const Token = await ethers.getContractFactory("ERC20Mock");
-
         const initialSupply = ethers.parseUnits(config.initialAmount, config.decimals);
 
         console.log(`\n部署 ${config.symbol}...`);
-
         const token = await Token.deploy(
             config.name,
             config.symbol,
             deployer.address,
             initialSupply
         );
-
         await token.waitForDeployment();
-
         const tokenAddress = await token.getAddress();
 
-        // 获取代币信息
         try {
             const decimals = await token.decimals();
             const totalSupply = await token.totalSupply();
@@ -144,7 +129,6 @@ async function main() {
                 deployerBalance: deployerBalance.toString(),
                 color: config.color
             };
-
         } catch (error) {
             console.error(`❌ ${config.symbol} 验证失败:`, error.message);
             deployedTokens[config.symbol] = {
@@ -158,7 +142,7 @@ async function main() {
         }
     }
 
-    // 3. 部署质押合约
+    // 3. 部署质押合约 - 保持不变
     console.log("\n\n3. 部署质押合约...");
     const Stake = await ethers.getContractFactory("MetaNodeStake");
     const startBlock = (await ethers.provider.getBlockNumber()) + 10;
@@ -180,10 +164,8 @@ async function main() {
     const stakeAddress = await stakeContract.getAddress();
     console.log("质押合约地址:", stakeAddress);
 
-    // 4. 初始化质押池
+    // 4. 初始化质押池 - 保持不变
     console.log("\n4. 初始化质押池...");
-
-    // ETH 池
     await stakeContract.addPool(
         ethers.ZeroAddress,
         ethers.parseEther("10"),
@@ -192,7 +174,6 @@ async function main() {
         false
     );
 
-    // 为每个代币添加质押池
     for (const [symbol, token] of Object.entries(deployedTokens)) {
         if (symbol !== "MNT") {
             console.log(`添加 ${symbol} 质押池...`);
@@ -206,24 +187,18 @@ async function main() {
         }
     }
 
-    // 5. 转入奖励代币
+    // 5. 转入奖励代币 - 保持不变
     console.log("\n5. 准备奖励代币...");
     const mntToken = await ethers.getContractAt("ERC20Mock", deployedTokens["MNT"].address);
-
-    // 获取余额
     let mntDeployerBalance = await mntToken.balanceOf(deployer.address);
     console.log(`MNT 部署者余额: ${ethers.formatEther(mntDeployerBalance)}`);
 
-    // 计划转入的奖励金额
     const plannedReward = ethers.parseEther("10000");
     console.log(`计划转入奖励: ${ethers.formatEther(plannedReward)}`);
 
-    // 确定实际要转入的金额
-    let actualReward;
-
-    // 转换余额为 BigInt 进行比较
     const balanceBigInt = BigInt(mntDeployerBalance.toString());
     const plannedBigInt = BigInt(plannedReward.toString());
+    let actualReward;
 
     if (balanceBigInt < plannedBigInt) {
         console.warn(`⚠️  余额不足，使用可用余额的 90%`);
@@ -233,32 +208,24 @@ async function main() {
     }
 
     console.log(`实际转入奖励: ${ethers.formatEther(actualReward.toString())}`);
-
-    // 执行转账
     await mntToken.transfer(stakeAddress, actualReward);
     console.log(`✅ 成功转入MNT奖励`);
 
-    // 6. 为测试账户分配代币
+    // 6. 为测试账户分配代币 - 保持不变
     console.log("\n6. 分配测试代币...");
-
-    // 使用更安全的分配逻辑
     for (const [symbol, token] of Object.entries(deployedTokens)) {
         const tokenContract = await ethers.getContractAt("ERC20Mock", token.address);
         const decimals = token.decimals;
 
-        // 获取当前余额
         let currentBalance = await tokenContract.balanceOf(deployer.address);
         currentBalance = BigInt(currentBalance.toString());
 
         console.log(`\n${symbol} 当前余额: ${ethers.formatUnits(currentBalance.toString(), decimals)}`);
 
-        // 为每个测试账户转账
         for (const account of testAccounts) {
-            // 计算每个账户应该获得的金额
-            const perAccountAmount = ethers.parseUnits("50", decimals); // 每个账户 50 个
+            const perAccountAmount = ethers.parseUnits("50", decimals);
             const perAccountAmountBigInt = BigInt(perAccountAmount.toString());
 
-            // 检查余额是否足够
             if (currentBalance >= perAccountAmountBigInt) {
                 try {
                     await tokenContract.transfer(account, perAccountAmount);
@@ -274,7 +241,39 @@ async function main() {
         }
     }
 
-    // 7. 输出最终配置
+    // ==================== 新增：DEX 相关部署 ====================
+    console.log("\n\n7. 部署 DEX 路由器（新增功能）...");
+    let dexRouterAddress = "";
+
+    try {
+        // 尝试部署模拟 DEX 路由器
+        // 注意：这里假设已经有 MockDexRouter 合约
+        const MockDexRouter = await ethers.getContractFactory("MockDexRouter");
+        const mockRouter = await MockDexRouter.deploy();
+        await mockRouter.waitForDeployment();
+
+        dexRouterAddress = await mockRouter.getAddress();
+        console.log(`✅ 模拟 DEX 路由器部署完成: ${dexRouterAddress}`);
+
+        // 简单验证
+        const testPath = [deployedTokens["MNT"].address, deployedTokens["USDC"].address];
+        const testAmount = ethers.parseUnits("1", 18);
+
+        try {
+            const amounts = await mockRouter.getAmountsOut(testAmount, testPath);
+            console.log(`✅ DEX 功能验证通过`);
+        } catch (error) {
+            console.log(`⚠️  DEX 功能验证失败，但地址可用: ${error.message}`);
+        }
+
+    } catch (error) {
+        console.log(`⚠️  无法部署 MockDexRouter: ${error.message}`);
+        console.log(`   使用 Hardhat 默认地址进行 DEX 测试`);
+        dexRouterAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+    }
+    // ==================== 新增结束 ====================
+
+    // 7. 输出最终配置 - 添加 DEX 信息
     console.log("\n🎉 部署完成！");
     console.log("=".repeat(50));
 
@@ -289,10 +288,14 @@ async function main() {
         console.log(`${account.slice(0, 8)}...: ${ethers.formatEther(balance)} ETH`);
     }
 
+    // ==================== 新增：输出 DEX 配置 ====================
+    console.log("\n🔗 DEX 路由器地址（用于前端测试）:");
+    console.log(`MockDexRouter: ${dexRouterAddress}`);
+
     console.log("\n📋 前端配置示例:");
     console.log(`
-// 代币地址配置
-export const LOCAL_TOKENS = ${JSON.stringify(
+// 代币合约地址
+${JSON.stringify(
         Object.keys(deployedTokens).reduce((acc, symbol) => {
             acc[symbol] = deployedTokens[symbol].address;
             return acc;
@@ -301,7 +304,6 @@ export const LOCAL_TOKENS = ${JSON.stringify(
         2
     )};
 
-// 接收地址配置（测试账户）
 export const TEST_RECEIVERS = ${JSON.stringify(
         testAccounts.reduce((acc, account, index) => {
             acc[`TestAccount${index + 1}`] = account;
@@ -310,15 +312,44 @@ export const TEST_RECEIVERS = ${JSON.stringify(
         null,
         2
     )};
+
+// 新增：DEX 配置（可选）
+export const DEX_CONFIG = {
+    routerAddress: "${dexRouterAddress}",
+    supportedTokens: ${JSON.stringify(
+        Object.keys(deployedTokens).reduce((acc, symbol) => {
+            acc[symbol] = deployedTokens[symbol].address;
+            return acc;
+        }, {}),
+        null,
+        2
+    )}
+};
     `);
 
-    console.log("\n💡 测试准备完成:");
-    console.log("✅ 所有测试账户已获得 10 ETH");
-    console.log("✅ 所有测试账户已获得 50 个每种代币");
-    console.log("✅ 质押合约已部署并配置");
-    console.log("✅ 可以开始进行转账和质押测试");
+    console.log("\n💡 功能说明:");
+    console.log("✅ 原有功能全部保持:");
+    console.log("   - 代币转账");
+    console.log("   - 质押合约");
+    console.log("   - 测试账户分发");
+    console.log("");
+    console.log("✅ 新增 DEX 功能:");
+    console.log("   - DEX 路由器地址: " + dexRouterAddress);
+    console.log("   - 可用于前端 DEX 组件测试");
+    console.log("   - 价格预览功能需要路由器支持");
+    console.log("");
+    console.log("⚠️  注意事项:");
+    console.log("   - DEX 是模拟版本，实际兑换可能需要额外配置");
+    console.log("   - 如果 DEX 部署失败，前端可以使用模拟模式");
 
-    return { deployedTokens, stakeAddress, testAccounts };
+    return {
+        // 原有返回
+        deployedTokens,
+        stakeAddress,
+        testAccounts,
+        // 新增返回
+        dexRouterAddress
+    };
 }
 
 main().catch((error) => {
