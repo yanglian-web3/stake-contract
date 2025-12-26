@@ -2,8 +2,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "./IUniswapV2Router02.sol";
+import "../interfaces/IUniswapV2Router02.sol";
+import "../interfaces/IUniswapV2Factory.sol";
+import "../interfaces/IUniswapV2Pair.sol";
+
 import "./UniswapV2Library.sol";
+
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 interface IWETH {

@@ -1,4 +1,4 @@
-// 完整的本地部署脚本（保持原有功能，添加 DEX）- 精简版
+// 完整的本地部署脚本（保持原有功能，添加真实DEX）
 const { ethers, upgrades } = require("hardhat");
 
 // ETH 分发函数 - 保持不变
@@ -37,7 +37,7 @@ async function distributeETH(deployer, accounts, amountETH = "10") {
 }
 
 async function main() {
-    console.log("🚀 开始本地测试（完整版）...");
+    console.log("🚀 开始本地测试（完整版 - 真实DEX）...");
 
     // 获取所有可用账户 - 不变
     const accounts = await ethers.getSigners();
@@ -241,45 +241,124 @@ async function main() {
         }
     }
 
-    // ==================== 新增：DEX 相关部署 ====================
-    console.log("\n\n7. 部署 DEX 路由器（新增功能）...");
+    // ==================== 修改开始：部署真实DEX系统 ====================
+    console.log("\n\n7. 部署真实 DEX 系统...");
+
+    let dexFactoryAddress = "";
     let dexRouterAddress = "";
+    let wethAddress = "";
+    const tradingPairs = {};
 
     try {
-        // 尝试部署模拟 DEX 路由器
-        // 注意：这里假设已经有 MockDexRouter 合约
-        const MockDexRouter = await ethers.getContractFactory("MockDexRouter");
-        const mockRouter = await MockDexRouter.deploy();
-        await mockRouter.waitForDeployment();
+        // 7.1 部署 WETH9 合约（必须）
+        console.log("\n7.1 部署 WETH9 合约...");
+        const WETH9 = await ethers.getContractFactory("WETH9");
+        const weth = await WETH9.deploy();
+        await weth.waitForDeployment();
+        wethAddress = await weth.getAddress();
+        console.log(`✅ WETH 地址: ${wethAddress}`);
 
-        dexRouterAddress = await mockRouter.getAddress();
-        console.log(`✅ 模拟 DEX 路由器部署完成: ${dexRouterAddress}`);
+        // 7.2 部署 UniswapV2Factory（必须）
+        console.log("\n7.2 部署 UniswapV2Factory...");
+        const UniswapV2Factory = await ethers.getContractFactory("UniswapV2Factory");
+        const factory = await UniswapV2Factory.deploy(deployer.address);
+        await factory.waitForDeployment();
+        dexFactoryAddress = await factory.getAddress();
+        console.log(`✅ Factory 地址: ${dexFactoryAddress}`);
 
-        // 简单验证
-        const testPath = [deployedTokens["MNT"].address, deployedTokens["USDC"].address];
-        const testAmount = ethers.parseUnits("1", 18);
+        // 7.3 部署 UniswapV2Router02（替换MockDexRouter）
+        console.log("\n7.3 部署 UniswapV2Router02...");
+        const UniswapV2Router02 = await ethers.getContractFactory("UniswapV2Router02");
+        const router = await UniswapV2Router02.deploy(dexFactoryAddress, wethAddress);
+        await router.waitForDeployment();
+        dexRouterAddress = await router.getAddress();
+        console.log(`✅ Router02 地址: ${dexRouterAddress}`);
 
-        try {
-            const amounts = await mockRouter.getAmountsOut(testAmount, testPath);
-            console.log(`✅ DEX 功能验证通过`);
-        } catch (error) {
-            console.log(`⚠️  DEX 功能验证失败，但地址可用: ${error.message}`);
+        // 7.4 创建主要交易对
+        console.log("\n7.4 创建交易对...");
+        const mntAddress = deployedTokens["MNT"].address;
+        const usdcAddress = deployedTokens["USDC"].address;
+
+        // 创建 MNT/USDC 交易对
+        console.log(`   创建 MNT/USDC 交易对...`);
+        await factory.createPair(mntAddress, usdcAddress);
+        const mntUsdcPair = await factory.getPair(mntAddress, usdcAddress);
+        tradingPairs["MNT_USDC"] = mntUsdcPair;
+        console.log(`   ✅ MNT/USDC Pair: ${mntUsdcPair}`);
+
+        // 创建 MNT/WETH 交易对（用于ETH交易）
+        console.log(`   创建 MNT/WETH 交易对...`);
+        await factory.createPair(mntAddress, wethAddress);
+        const mntWethPair = await factory.getPair(mntAddress, wethAddress);
+        tradingPairs["MNT_WETH"] = mntWethPair;
+        console.log(`   ✅ MNT/WETH Pair: ${mntWethPair}`);
+
+        // 7.5 为测试账户准备WETH（可选）
+        console.log("\n7.5 为测试账户准备WETH（可选）...");
+        for (let i = 0; i < Math.min(testAccounts.length, 2); i++) {
+            const account = testAccounts[i];
+            try {
+                const signer = await ethers.getSigner(account);
+                const wethContract = await ethers.getContractAt("WETH9", wethAddress, signer);
+
+                const ethBalance = await ethers.provider.getBalance(account);
+                if (ethBalance >= ethers.parseEther("0.5")) {
+                    const depositTx = await wethContract.deposit({
+                        value: ethers.parseEther("0.5")
+                    });
+                    await depositTx.wait();
+                    console.log(`   ✅ 账户 ${account.slice(0, 8)}...: 0.5 ETH 已存入WETH`);
+                }
+            } catch (error) {
+                // 静默失败，不影响整体部署
+            }
         }
 
-    } catch (error) {
-        console.log(`⚠️  无法部署 MockDexRouter: ${error.message}`);
-        console.log(`   使用 Hardhat 默认地址进行 DEX 测试`);
-        dexRouterAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-    }
-    // ==================== 新增结束 ====================
+        console.log("\n✅ DEX 系统部署完成！");
 
-    // 7. 输出最终配置 - 添加 DEX 信息
+    } catch (error) {
+        console.error(`\n❌ DEX 部署失败:`, error.message);
+        console.log(`\n⚠️  尝试备用方案...`);
+
+        try {
+            // 备用方案：部署模拟路由器
+            console.log("部署 MockDexRouter 作为备用...");
+            const MockDexRouter = await ethers.getContractFactory("MockDexRouter");
+            const mockRouter = await MockDexRouter.deploy();
+            await mockRouter.waitForDeployment();
+            dexRouterAddress = await mockRouter.getAddress();
+            console.log(`✅ 模拟路由器地址: ${dexRouterAddress}`);
+        } catch (fallbackError) {
+            console.log(`❌ 备用方案也失败: ${fallbackError.message}`);
+            dexRouterAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+        }
+    }
+    // ==================== 修改结束 ====================
+
+    // 8. 输出最终配置 - 更新DEX信息
     console.log("\n🎉 部署完成！");
-    console.log("=".repeat(50));
+    console.log("=".repeat(60));
 
     console.log("\n📊 代币列表:");
     for (const [symbol, token] of Object.entries(deployedTokens)) {
-        console.log(`${symbol}: ${token.address}`);
+        console.log(`${symbol.padEnd(6)}: ${token.address}`);
+    }
+
+    console.log("\n📊 核心合约地址:");
+    console.log(`质押合约:  ${stakeAddress}`);
+    if (dexFactoryAddress) {
+        console.log(`DEX工厂:   ${dexFactoryAddress}`);
+    }
+    console.log(`DEX路由器: ${dexRouterAddress}`);
+    if (wethAddress) {
+        console.log(`WETH:      ${wethAddress}`);
+    }
+
+    if (Object.keys(tradingPairs).length > 0) {
+        console.log("\n📊 交易对地址:");
+        for (const [pair, address] of Object.entries(tradingPairs)) {
+            console.log(`${pair.padEnd(10)}: ${address}`);
+        }
     }
 
     console.log("\n📊 测试账户 ETH 余额:");
@@ -288,9 +367,12 @@ async function main() {
         console.log(`${account.slice(0, 8)}...: ${ethers.formatEther(balance)} ETH`);
     }
 
-    // ==================== 新增：输出 DEX 配置 ====================
-    console.log("\n🔗 DEX 路由器地址（用于前端测试）:");
-    console.log(`MockDexRouter: ${dexRouterAddress}`);
+    console.log("\n🔗 DEX 配置（用于前端测试）:");
+    console.log(`路由器地址: ${dexRouterAddress}`);
+    if (dexFactoryAddress) {
+        console.log(`工厂地址:   ${dexFactoryAddress}`);
+        console.log(`WETH地址:   ${wethAddress || "未部署"}`);
+    }
 
     console.log("\n📋 前端配置示例:");
     console.log(`
@@ -304,18 +386,15 @@ ${JSON.stringify(
         2
     )};
 
-export const TEST_RECEIVERS = ${JSON.stringify(
-        testAccounts.reduce((acc, account, index) => {
-            acc[`TestAccount${index + 1}`] = account;
-            return acc;
-        }, {}),
-        null,
-        2
-    )};
+// 质押合约地址
+export const STAKE_CONTRACT = "${stakeAddress}";
 
-// 新增：DEX 配置（可选）
+// DEX 配置
 export const DEX_CONFIG = {
     routerAddress: "${dexRouterAddress}",
+    ${dexFactoryAddress ? `factoryAddress: "${dexFactoryAddress}",` : ''}
+    ${wethAddress ? `wethAddress: "${wethAddress}",` : ''}
+    ${Object.keys(tradingPairs).length > 0 ? `tradingPairs: ${JSON.stringify(tradingPairs, null, 2)},` : ''}
     supportedTokens: ${JSON.stringify(
         Object.keys(deployedTokens).reduce((acc, symbol) => {
             acc[symbol] = deployedTokens[symbol].address;
@@ -325,22 +404,39 @@ export const DEX_CONFIG = {
         2
     )}
 };
+
+// 测试账户
+export const TEST_RECEIVERS = ${JSON.stringify(
+        testAccounts.reduce((acc, account, index) => {
+            acc[`TestAccount${index + 1}`] = account;
+            return acc;
+        }, {}),
+        null,
+        2
+    )};
     `);
 
     console.log("\n💡 功能说明:");
     console.log("✅ 原有功能全部保持:");
     console.log("   - 代币转账");
-    console.log("   - 质押合约");
+    console.log("   - 质押合约（完整功能）");
     console.log("   - 测试账户分发");
     console.log("");
-    console.log("✅ 新增 DEX 功能:");
-    console.log("   - DEX 路由器地址: " + dexRouterAddress);
-    console.log("   - 可用于前端 DEX 组件测试");
-    console.log("   - 价格预览功能需要路由器支持");
+    if (dexFactoryAddress) {
+        console.log("✅ 新增真实 DEX 功能:");
+        console.log("   - UniswapV2Factory: 创建交易对");
+        console.log("   - UniswapV2Router02: 处理所有DEX交易");
+        console.log("   - WETH9: ETH包装代币");
+        console.log("   - 多个交易对已创建");
+    } else {
+        console.log("✅ 新增 DEX 功能:");
+        console.log("   - DEX 路由器地址: " + dexRouterAddress);
+        console.log("   - 可用于前端 DEX 组件测试");
+    }
     console.log("");
     console.log("⚠️  注意事项:");
-    console.log("   - DEX 是模拟版本，实际兑换可能需要额外配置");
-    console.log("   - 如果 DEX 部署失败，前端可以使用模拟模式");
+    console.log("   - 质押合约功能完全保留，未作任何修改");
+    console.log("   - 如果真实DEX部署失败，会自动使用模拟版本");
 
     return {
         // 原有返回
@@ -348,7 +444,10 @@ export const DEX_CONFIG = {
         stakeAddress,
         testAccounts,
         // 新增返回
-        dexRouterAddress
+        dexFactoryAddress,
+        dexRouterAddress,
+        wethAddress,
+        tradingPairs
     };
 }
 

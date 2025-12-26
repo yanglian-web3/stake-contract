@@ -1,4 +1,4 @@
-// contracts/uniswapv2/libraries/UniswapV2Library.sol
+// contracts/uniswapv2/libraries/UniswapV2Library.sol - 修复警告版
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
@@ -44,35 +44,84 @@ library UniswapV2Library {
         amountIn = numerator / denominator + 1;
     }
 
-    // 获取输出金额数组
-    function getAmountsOut(address factory, uint amountIn, address[] memory path) internal view returns (uint[] memory amounts) {
+    // 获取输出金额数组 - 修复版（处理空流动性）
+    function getAmountsOut(address factory, uint amountIn, address[] memory path)
+        internal
+        view
+        returns (uint[] memory amounts)
+    {
         require(path.length >= 2, 'UniswapV2Library: INVALID_PATH');
         amounts = new uint[](path.length);
         amounts[0] = amountIn;
 
         for (uint i = 0; i < path.length - 1; i++) {
-            (uint reserveIn, uint reserveOut) = getReserves(factory, path[i], path[i + 1]);
-            amounts[i + 1] = getAmountOut(amounts[i], reserveIn, reserveOut);
+            // 尝试获取储备量，如果失败则返回0
+            (uint reserveIn, uint reserveOut) = getReservesSafe(factory, path[i], path[i + 1]);
+
+            if (reserveIn == 0 || reserveOut == 0) {
+                amounts[i + 1] = 0;
+            } else {
+                amounts[i + 1] = getAmountOut(amounts[i], reserveIn, reserveOut);
+            }
         }
     }
 
-    // 获取输入金额数组
-    function getAmountsIn(address factory, uint amountOut, address[] memory path) internal view returns (uint[] memory amounts) {
+    // 获取输入金额数组 - 修复版
+    function getAmountsIn(address factory, uint amountOut, address[] memory path)
+        internal
+        view
+        returns (uint[] memory amounts)
+    {
         require(path.length >= 2, 'UniswapV2Library: INVALID_PATH');
         amounts = new uint[](path.length);
-        amounts[amounts.length - 1] = amountOut;
+        amounts[path.length - 1] = amountOut;
 
         for (uint i = path.length - 1; i > 0; i--) {
-            (uint reserveIn, uint reserveOut) = getReserves(factory, path[i - 1], path[i]);
-            amounts[i - 1] = getAmountIn(amounts[i], reserveIn, reserveOut);
+            (uint reserveIn, uint reserveOut) = getReservesSafe(factory, path[i - 1], path[i]);
+
+            if (reserveIn == 0 || reserveOut == 0) {
+                amounts[i - 1] = 0;
+            } else {
+                amounts[i - 1] = getAmountIn(amounts[i], reserveIn, reserveOut);
+            }
         }
     }
 
-    // 获取储备量
-    function getReserves(address factory, address tokenA, address tokenB) internal view returns (uint reserveA, uint reserveB) {
-        (address token0,) = sortTokens(tokenA, tokenB);
+    // 安全的获取储备量函数（防止revert）
+    function getReservesSafe(address factory, address tokenA, address tokenB)
+        internal
+        view
+        returns (uint reserveA, uint reserveB)
+    {
         address pair = pairFor(factory, tokenA, tokenB);
-        (uint reserve0, uint reserve1,) = IUniswapV2Pair(pair).getReserves();
+
+        // 检查pair是否存在
+        uint32 size;
+        assembly {
+            size := extcodesize(pair)
+        }
+        if (size == 0) {
+            return (0, 0);
+        }
+
+        try IUniswapV2Pair(pair).getReserves() returns (uint112 reserve0, uint112 reserve1, uint32) {
+            (address token0, ) = sortTokens(tokenA, tokenB);
+            (reserveA, reserveB) = tokenA == token0 ? (reserve0, reserve1) : (reserve1, reserve0);
+        } catch {
+            // 如果获取失败，返回0
+            return (0, 0);
+        }
+    }
+
+    // 原始获取储备量函数（保持向后兼容）
+    function getReserves(address factory, address tokenA, address tokenB)
+        internal
+        view
+        returns (uint reserveA, uint reserveB)
+    {
+        (address token0, ) = sortTokens(tokenA, tokenB);
+        address pair = pairFor(factory, tokenA, tokenB);
+        (uint reserve0, uint reserve1, ) = IUniswapV2Pair(pair).getReserves();
         (reserveA, reserveB) = tokenA == token0 ? (reserve0, reserve1) : (reserve1, reserve0);
     }
 }

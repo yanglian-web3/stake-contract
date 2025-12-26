@@ -3,8 +3,8 @@
 pragma solidity ^0.8.20;
 
 interface IUniswapV2Router02 {
-    function factory() external pure returns (address);
-    function WETH() external pure returns (address);
+    function factory() external view returns (address);  // 从 pure 改为 view
+    function WETH() external view returns (address);     // 从 pure 改为 view
 
     function addLiquidity(
         address tokenA,
