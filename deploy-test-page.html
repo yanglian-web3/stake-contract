@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimpleDEX 测试页面</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #1a1a1a; color: #fff; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .section { background: #2a2a2a; padding: 20px; margin: 20px 0; border-radius: 10px; }
+        h2 { color: #4CAF50; }
+        .account { background: #333; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .copy-btn { background: #4CAF50; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
+        .copy-btn:hover { background: #45a049; }
+        .info { color: #4CAF50; }
+        .warning { color: #ff9800; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 SimpleDEX 部署成功！</h1>
+        
+        <div class="section">
+            <h2>📋 部署信息</h2>
+            <p><strong>网络:</strong> localhost (31337)</p>
+            <p><strong>DEX 地址:</strong> <span id="dex-address">0x9A676e781A523b5d0C0e43731313A708CB607508</span></p>
+            <p><strong>TKNA:</strong> 0x610178dA211FEF7D417bC0e6FeD39F05609AD788</p>
+            <p><strong>TKNB:</strong> 0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e</p>
+        </div>
+        
+        <div class="section">
+            <h2>👤 测试账户</h2>
+            
+            <div class="account">
+                <p><strong>Hardhat 账户 0</strong></p>
+                <p>地址: <span class="address">0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266</span></p>
+                <p>私钥: <span class="private-key">0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80</span></p>
+                
+                <button class="copy-btn" onclick="copyToClipboard('0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266')">复制地址</button>
+                <button class="copy-btn" onclick="copyToClipboard('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80')">复制私钥</button>
+            </div>
+            
+            <div class="account">
+                <p><strong>Hardhat 账户 1</strong></p>
+                <p>地址: <span class="address">0x70997970C51812dc3A010C7d01b50e0d17dc79C8</span></p>
+                <p>私钥: <span class="private-key">0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d</span></p>
+                
+                <button class="copy-btn" onclick="copyToClipboard('0x70997970C51812dc3A010C7d01b50e0d17dc79C8')">复制地址</button>
+                <button class="copy-btn" onclick="copyToClipboard('0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d')">复制私钥</button>
+            </div>
+            
+            <div class="account">
+                <p><strong>MetaMask 测试账户</strong></p>
+                <p>地址: <span class="address">0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC</span></p>
+                
+                <p class="info">这个账户已自动获得 1000 TKNA 和 1000 TKNB</p>
+                <button class="copy-btn" onclick="copyToClipboard('0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC')">复制地址</button>
+                
+            </div>
+            
+        </div>
+        
+        <div class="section">
+            <h2>🚀 快速开始</h2>
+            <p>1. 在 MetaMask 中导入账户私钥</p>
+            <p>2. 确保连接到 localhost:8545</p>
+            <p>3. 访问前端页面进行测试</p>
+            <p class="warning">注意：私钥仅用于测试，不要用于主网！</p>
+        </div>
+        
+        <div class="section">
+            <h2>🔗 重要链接</h2>
+            <p><a href="/dex-swap" style="color: #4CAF50;">前往 DEX 测试页面</a></p>
+        </div>
+    </div>
+    
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('已复制到剪贴板！');
+            });
+        }
+    </script>
+</body>
+</html>

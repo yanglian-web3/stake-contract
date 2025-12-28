@@ -1,0 +1,86 @@
+{
+  "chainId": 31337,
+  "networkName": "localhost",
+  "rpcUrl": "http://localhost:8545",
+  "simpleDex": {
+    "address": "0x9A676e781A523b5d0C0e43731313A708CB607508",
+    "name": "SimpleDEX",
+    "abi": [
+      "function tokenA() view returns (address)",
+      "function tokenB() view returns (address)",
+      "function reserveA() view returns (uint256)",
+      "function reserveB() view returns (uint256)",
+      "function addLiquidity(uint256 amountA, uint256 amountB) external",
+      "function removeLiquidity(uint256 amountA, uint256 amountB) external",
+      "function swap(uint256 amountIn, address fromToken, uint256 minAmountOut) external returns (uint256)",
+      "function getAmountOut(uint256 amountIn, address fromToken) view returns (uint256)",
+      "function getPrice() view returns (uint256)",
+      "function getReserves() view returns (uint256, uint256)",
+      "event Swap(address indexed sender, address tokenIn, address tokenOut, uint256 amountIn, uint256 amountOut)",
+      "event LiquidityAdded(address indexed provider, uint256 amountA, uint256 amountB)",
+      "event LiquidityRemoved(address indexed provider, uint256 amountA, uint256 amountB)"
+    ]
+  },
+  "tokens": {
+    "TKNA": {
+      "address": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
+      "symbol": "TKNA",
+      "name": "Token A",
+      "decimals": "18",
+      "abi": [
+        "function name() view returns (string)",
+        "function symbol() view returns (string)",
+        "function decimals() view returns (uint8)",
+        "function totalSupply() view returns (uint256)",
+        "function balanceOf(address account) view returns (uint256)",
+        "function transfer(address recipient, uint256 amount) returns (bool)",
+        "function allowance(address owner, address spender) view returns (uint256)",
+        "function approve(address spender, uint256 amount) returns (bool)",
+        "function transferFrom(address sender, address recipient, uint256 amount) returns (bool)",
+        "event Transfer(address indexed from, address indexed to, uint256 value)",
+        "event Approval(address indexed owner, address indexed spender, uint256 value)"
+      ]
+    },
+    "TKNB": {
+      "address": "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
+      "symbol": "TKNB",
+      "name": "Token B",
+      "decimals": "6",
+      "abi": [
+        "function name() view returns (string)",
+        "function symbol() view returns (string)",
+        "function decimals() view returns (uint8)",
+        "function totalSupply() view returns (uint256)",
+        "function balanceOf(address account) view returns (uint256)",
+        "function transfer(address recipient, uint256 amount) returns (bool)",
+        "function allowance(address owner, address spender) view returns (uint256)",
+        "function approve(address spender, uint256 amount) returns (bool)",
+        "function transferFrom(address sender, address recipient, uint256 amount) returns (bool)",
+        "event Transfer(address indexed from, address indexed to, uint256 value)",
+        "event Approval(address indexed owner, address indexed spender, uint256 value)"
+      ]
+    }
+  },
+  "defaultAccount": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+  "testAccounts": [
+    {
+      "address": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      "name": "Hardhat 账户 0",
+      "note": ""
+    },
+    {
+      "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+      "name": "Hardhat 账户 1",
+      "note": ""
+    },
+    {
+      "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+      "name": "MetaMask 测试账户",
+      "note": "这个账户已自动获得 1000 TKNA 和 1000 TKNB"
+    }
+  ],
+  "initialLiquidity": {
+    "TKNA": "100.0",
+    "TKNB": "50.0"
+  }
+}

@@ -1,0 +1,15 @@
+[
+  "function tokenA() view returns (address)",
+  "function tokenB() view returns (address)",
+  "function reserveA() view returns (uint256)",
+  "function reserveB() view returns (uint256)",
+  "function addLiquidity(uint256 amountA, uint256 amountB) external",
+  "function removeLiquidity(uint256 amountA, uint256 amountB) external",
+  "function swap(uint256 amountIn, address fromToken, uint256 minAmountOut) external returns (uint256)",
+  "function getAmountOut(uint256 amountIn, address fromToken) view returns (uint256)",
+  "function getPrice() view returns (uint256)",
+  "function getReserves() view returns (uint256, uint256)",
+  "event Swap(address indexed sender, address tokenIn, address tokenOut, uint256 amountIn, uint256 amountOut)",
+  "event LiquidityAdded(address indexed provider, uint256 amountA, uint256 amountB)",
+  "event LiquidityRemoved(address indexed provider, uint256 amountA, uint256 amountB)"
+]
