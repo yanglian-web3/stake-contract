@@ -1,0 +1,28 @@
+{
+  "simpleDex": {
+    "address": "0xCBBe2A5c3A22BE749D5DDF24e9534f98951983e2",
+    "name": "SimpleDEX",
+    "tokenA": "0x512F7469BcC83089497506b5df64c6E246B39925",
+    "tokenB": "0x9fD16eA9E31233279975D99D5e8Fc91dd214c7Da",
+    "reserves": {
+      "tokenA": "100.0",
+      "tokenB": "50.0"
+    },
+    "price": "0.5"
+  },
+  "tokens": {
+    "TKNA": {
+      "address": "0x512F7469BcC83089497506b5df64c6E246B39925",
+      "symbol": "TKNA",
+      "name": "Token A",
+      "decimals": "18"
+    },
+    "TKNB": {
+      "address": "0x9fD16eA9E31233279975D99D5e8Fc91dd214c7Da",
+      "symbol": "TKNB",
+      "name": "Token B",
+      "decimals": "6"
+    }
+  },
+  "timestamp": "2025-12-28T13:19:54.733Z"
+}

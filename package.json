@@ -4,7 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "deploy": "npm run deploy:tokens && npm run deploy:stake && npm run deploy:dex",
+    "deploy:all": "npx hardhat run scripts/deploy/main.js --network localhost",
+    "deploy:tokens": "npx hardhat run scripts/deploy/deploy-tokens.js --network localhost",
+    "deploy:stake": "npx hardhat run scripts/deploy/deploy-stake.js --network localhost",
+    "deploy:dex": "npx hardhat run scripts/deploy/deploy-dex.js --network localhost",
+    "deploy:main": "npx hardhat run scripts/deploy/main.js --network localhost",
+    "clean:deployment": "npx hardhat run scripts/clean-deployment.js --network localhost",
+    "fix:usdc": "npx hardhat run scripts/fix-usdc.js --network localhost"
   },
   "keywords": [],
   "author": "",

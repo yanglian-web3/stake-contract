@@ -1,0 +1,120 @@
+{
+  "stakeContract": {
+    "address": "0x8e264821AFa98DD104eEcfcfa7FD9f8D8B320adA",
+    "name": "MetaNodeStake",
+    "startBlock": "269",
+    "endBlock": "100269",
+    "metaNodePerBlock": "0.02"
+  },
+  "tokenDistributions": {
+    "MNT": [
+      {
+        "account": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+        "success": true,
+        "txHash": "0xf6809744c74e85f0e923f48fb44aebce0ff0a8b1020c114b259a6a9bfb7c2244"
+      },
+      {
+        "account": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "success": true,
+        "txHash": "0x17d2da337113204f7216afa73079458de27f08223d84a3d88b0b8c19889f8e32"
+      },
+      {
+        "account": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+        "success": true,
+        "txHash": "0x8689a913a6b35825cba1046ee9faae229dad852b1ca77ffec8739912d3656db9"
+      },
+      {
+        "account": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+        "success": true,
+        "txHash": "0x686969fac907f3567864ff42c7b92c9880890ff462eb6ef80161b79b2348ecc3"
+      },
+      {
+        "account": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+        "success": true,
+        "txHash": "0x38da8f2ab3cb9a2a3fa98bf867b34b01ee011783b32a67b1a9e469d5f93d22e0"
+      }
+    ],
+    "USDC": [
+      {
+        "account": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+        "success": true,
+        "txHash": "0x417c07db2e045eaa977997595d7f787f2e7eee0eff198a661ca99495a96a7ebb"
+      },
+      {
+        "account": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "success": true,
+        "txHash": "0x53756f1515fb425060b710d53354f061c4300a55c33eea3a6a4a82a4519db109"
+      },
+      {
+        "account": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+        "success": true,
+        "txHash": "0xbb1a1230791bbe67800ada5d0c5bb6c8b2e9f65553e136f240045b560650f7d9"
+      },
+      {
+        "account": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+        "success": true,
+        "txHash": "0x05dffb7e8716131a16d57d5ad3691caa643b9e0a1a4da7b6c9ae31e2f704fa6f"
+      },
+      {
+        "account": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+        "success": true,
+        "txHash": "0xbe93ca6c80e5c9f9170f2f96da79e08f758fe9187a5cfeea77f06c2d5094625e"
+      }
+    ],
+    "DAI": [
+      {
+        "account": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+        "success": true,
+        "txHash": "0xa1ce5df6193c74651a36e00701de016537d76b5b849cdbfd8c0220f468c75880"
+      },
+      {
+        "account": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "success": true,
+        "txHash": "0x636be633cc8cfe2abef6e54960b7f23651219d32a885598b192ecb7db433140a"
+      },
+      {
+        "account": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+        "success": true,
+        "txHash": "0xf44673c75b1396bbacd46bc11878b86bce8f8a187a2f72c9f982af804fa3bd85"
+      },
+      {
+        "account": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+        "success": true,
+        "txHash": "0xd2e143a9822d6c02a8478ca95dfdb42c413c42e1bdf31cd0eddf7b836fb332c2"
+      },
+      {
+        "account": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+        "success": true,
+        "txHash": "0x80027d24035805421a83e6bb835ecd15579e6fc4b6bfaf65ad7e56a265a4e700"
+      }
+    ],
+    "LINK": [
+      {
+        "account": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+        "success": true,
+        "txHash": "0xfbbb62f49d256709231c65c1c181dfe394780a5c0943570c6cbda27851ecbfe6"
+      },
+      {
+        "account": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+        "success": true,
+        "txHash": "0x61e50461344272e98cfba5e6d96fc93d201e27f1a4dbda78e26a3d8660c20945"
+      },
+      {
+        "account": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+        "success": true,
+        "txHash": "0x14b1d7243581e859a2e61abecfdac77eea0189588512b189c06efb8c92dd6e1e"
+      },
+      {
+        "account": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+        "success": true,
+        "txHash": "0x71c01b60ff3b80a36420efd803244df5fd1f3c5934116d6846e34e09f4d99016"
+      },
+      {
+        "account": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+        "success": true,
+        "txHash": "0xb15ee4ffe1061deeec0c7a41339e31e0427c9a4ad761a6144433fee01eb2379d"
+      }
+    ]
+  },
+  "timestamp": "2025-12-28T13:19:46.914Z"
+}
