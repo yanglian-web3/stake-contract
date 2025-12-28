@@ -71,6 +71,17 @@ npx hardhat console --network sepolia
 # 终端1：启动节点
 npx hardhat node
 
-# 重新部署测试
-npx hardhat run scripts/test-deposit-local.js --network localhost
+# 相关部署命令
+    # 部署所有
+    "deploy": "npx hardhat run scripts/deploy/main.js --network localhost",
+     # 部署代币
+    "deploy:tokens": "npx hardhat run scripts/deploy/deploy-tokens.js --network localhost",
+     # 部署质押合约
+    "deploy:stake": "npx hardhat run scripts/deploy/deploy-stake.js --network localhost",
+     # 部署dex
+    "deploy:dex": "npx hardhat run scripts/deploy/deploy-dex.js --network localhost",
+    #  清理部署
+    "clean:deployment": "npx hardhat run scripts/clean-deployment.js --network localhost",
+     # 修复 USDC 供应量问题
+    "fix:usdc": "npx hardhat run scripts/fix-usdc.js --network localhost"
 ````

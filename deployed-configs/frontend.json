@@ -1,0 +1,74 @@
+{
+  "chainId": 31337,
+  "networkName": "localhost",
+  "rpcUrl": "http://localhost:8545",
+  "timestamp": "2025-12-28T13:38:46.462Z",
+  "tokens": {
+    "MNT": {
+      "address": "0x572316aC11CB4bc5daf6BDae68f43EA3CCE3aE0e",
+      "symbol": "MNT",
+      "name": "MetaNode Token",
+      "decimals": 18
+    },
+    "USDC": {
+      "address": "0x975Ab64F4901Af5f0C96636deA0b9de3419D0c2F",
+      "symbol": "USDC",
+      "name": "Test USDC",
+      "decimals": 18
+    },
+    "DAI": {
+      "address": "0x4593ed9CbE6003e687e5e77368534bb04b162503",
+      "symbol": "DAI",
+      "name": "Test DAI",
+      "decimals": 18
+    },
+    "LINK": {
+      "address": "0xCd7c00Ac6dc51e8dCc773971Ac9221cC582F3b1b",
+      "symbol": "LINK",
+      "name": "Test LINK",
+      "decimals": 18
+    }
+  },
+  "stakeContract": {
+    "address": "0x8ac87219a0F5639BC01b470F87BA2b26356CB2B9",
+    "name": "MetaNodeStake"
+  },
+  "dexContracts": {
+    "address": "0xa4E00CB342B36eC9fDc4B50b3d527c3643D4C49e",
+    "name": "SimpleDEX",
+    "tokenA": "0xF342E904702b1D021F03f519D6D9614916b03f37",
+    "tokenB": "0x9849832a1d8274aaeDb1112ad9686413461e7101",
+    "reserves": {
+      "tokenA": "100.0",
+      "tokenB": "50.0"
+    },
+    "price": "0.5"
+  },
+  "testAccounts": [
+    {
+      "address": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+      "name": "测试账户1",
+      "index": 0
+    },
+    {
+      "address": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+      "name": "测试账户2",
+      "index": 1
+    },
+    {
+      "address": "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+      "name": "测试账户3",
+      "index": 2
+    },
+    {
+      "address": "0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+      "name": "测试账户4",
+      "index": 3
+    },
+    {
+      "address": "0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc",
+      "name": "测试账户5",
+      "index": 4
+    }
+  ]
+}
