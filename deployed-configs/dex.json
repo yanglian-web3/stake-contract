@@ -1,9 +1,9 @@
 {
   "simpleDex": {
-    "address": "0xa4E00CB342B36eC9fDc4B50b3d527c3643D4C49e",
+    "address": "0xd9abC93F81394Bd161a1b24B03518e0a570bDEAd",
     "name": "SimpleDEX",
-    "tokenA": "0xF342E904702b1D021F03f519D6D9614916b03f37",
-    "tokenB": "0x9849832a1d8274aaeDb1112ad9686413461e7101",
+    "tokenA": "0x837a41023CF81234f89F956C94D676918b4791c1",
+    "tokenB": "0x04d7478fDF318C3C22cECE62Da9D78ff94807D77",
     "reserves": {
       "tokenA": "100.0",
       "tokenB": "50.0"
@@ -12,17 +12,17 @@
   },
   "tokens": {
     "TKNA": {
-      "address": "0xF342E904702b1D021F03f519D6D9614916b03f37",
+      "address": "0x837a41023CF81234f89F956C94D676918b4791c1",
       "symbol": "TKNA",
       "name": "Token A",
       "decimals": "18"
     },
     "TKNB": {
-      "address": "0x9849832a1d8274aaeDb1112ad9686413461e7101",
+      "address": "0x04d7478fDF318C3C22cECE62Da9D78ff94807D77",
       "symbol": "TKNB",
       "name": "Token B",
       "decimals": "6"
     }
   },
-  "timestamp": "2025-12-28T13:38:46.398Z"
+  "timestamp": "2025-12-28T13:46:19.072Z"
 }
