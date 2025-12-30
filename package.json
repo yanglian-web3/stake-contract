@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "npx hardhat node",
     "deploy": "npx hardhat run scripts/deploy/main.js --network localhost",
     "deploy:tokens": "npx hardhat run scripts/deploy/deploy-tokens.js --network localhost",
     "deploy:stake": "npx hardhat run scripts/deploy/deploy-stake.js --network localhost",
